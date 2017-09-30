@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
-
-from math import sin
+from os import path, makedirs
+from bcrypt import hashpw, checkpw, gensalt
+from math import *
 
 app = Flask(__name__)
 
@@ -37,16 +38,34 @@ def test():
     payload['points'] = points[:-1]
     return jsonify(payload)
 
+def validate_user(username, password):
+    if not path.isdir('./user/'+username):
+        return False
+    with open('./user/'+username+'/.pass') as f:
+        p = f.readline().strip('\n')
+        if checkpw(password.encode('utf8'), p.encode('utf8')):
+            return True
+        return False
+
 @app.route("/register", methods=['POST'])
-def register()
+def register():
+    username = request.get_json()['username']
+    password = request.get_json()['password']
+    if path.isdir('./user/'+username):
+        return("User " + username + " already exists")
+    makedirs('./user/'+username)
+    with open('./user/'+username+'/.pass', 'w+') as f:
+        f.write(hashpw(password.encode('utf8'), gensalt()).decode('utf8') + '\n')
+    return "User created"
 
 @app.route("/upload", methods=['POST'])
 def upload():
-    print('TESTINGINGING')
-    username = request.get_json('username')
-    password = request.get_json('password')
-    print(username, password)
-    return 'suh dud'
+    username = request.get_json()['username']
+    password = request.get_json()['password']
+    login = validate_user(username, password) 
+    if not login:
+        return("Incorrect username and/or password")
+    return('suh dud ')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8855)

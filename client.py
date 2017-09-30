@@ -16,8 +16,8 @@ if argv[1] == 'upload':
     text = ''
     for line in lines:
         text += line
-    print(text)
-    r = post('http://kerlin.tech:8855/upload', data=dumps(payload))
+    #print(text)
+    r = post('http://kerlin.tech:8855/upload', data=dumps(payload), headers=headers)
     print(r.text)
 
 if argv[1] == 'register':
@@ -25,5 +25,6 @@ if argv[1] == 'register':
     headers = {'Content-Type': 'application/json'}
     payload['username'] = raw_input('username:')
     payload['password'] = getpass('password:')
-    r = post('http://kerlin.tech:8855/upload', data=dumps(payload))
+    headers = {'Content-Type': 'application/json'}
+    r = post('http://kerlin.tech:8855/register', data=dumps(payload), headers=headers)
     print(r.text)
