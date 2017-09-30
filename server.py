@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from os import path, makedirs
 from bcrypt import hashpw, checkpw, gensalt
 from math import *
@@ -62,10 +62,25 @@ def register():
 def upload():
     username = request.get_json()['username']
     password = request.get_json()['password']
+    text = request.get_json()['text']
+    filename = request.get_json()['filename']
     login = validate_user(username, password) 
     if not login:
         return("Incorrect username and/or password")
-    return('suh dud ')
+    with open('./user/'+username+'/'+filename, 'w+') as f:
+        f.write(text)
+    return "Uploaded file"
+
+@app.route("/<user>/<dfile>")
+def download(user=None, dfile=None):
+    if user is None or dfile is None:
+        return("File does not exist")
+    if dfile == '.pass':
+        return("Permission denied")
+    if path.isfile('./user/'+user+'/'+dfile):
+        return send_file('./user/'+user+'/'+dfile, as_attachment=True)
+    else:
+        return("No such file")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8855)

@@ -16,7 +16,8 @@ if argv[1] == 'upload':
     text = ''
     for line in lines:
         text += line
-    #print(text)
+    payload['text'] = text
+    payload['filename'] = argv[2]
     r = post('http://kerlin.tech:8855/upload', data=dumps(payload), headers=headers)
     print(r.text)
 
