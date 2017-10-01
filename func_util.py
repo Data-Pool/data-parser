@@ -1,5 +1,6 @@
 from sys import argv
 from json import dumps
+from math import *
 
 if argv[1] == 'gen':
     data = {}
